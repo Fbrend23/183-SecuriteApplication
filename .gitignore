@@ -2,3 +2,4 @@
 ~*
 /exercices/auth/nodejstoken/app/node_modules
 /exercices/auth/nodejstoken/node_modules
+exercices/auth/nodejstoken/.env
