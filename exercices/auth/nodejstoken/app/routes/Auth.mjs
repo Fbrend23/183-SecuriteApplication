@@ -18,37 +18,26 @@ const connectToDatabaseMiddleware = async (req, res, next) => {
 router.post("/", connectToDatabaseMiddleware, async (req, res) => {
   const { username, password } = req.body;
 
+  const queryString = "SELECT * FROM t_users WHERE useName = ?";
+
   try {
-    // Recherche de l'utilisateur
-    const [rows] = await req.dbConnection.query(
-      "SELECT * FROM user WHERE useName = ?",
-      [username]
-    );
+    const [rows] = await req.dbConnection.query(queryString, [username]);
 
     if (rows.length === 0) {
-      return res
-        .status(401)
-        .json({ error: "Username ou mot de passe incorrect" });
+      return res.status(401).json({ error: "Invalid username or password" });
     }
 
     const user = rows[0];
+    const passwordMatch = await bcrypt.compare(password, user.usePassword); // compare hashed password
 
-    // Vérification du mot de passe
-    const match = await bcrypt.compare(password, user.userPassword);
-
-    if (!match) {
-      return res
-        .status(401)
-        .json({ error: "Username ou mot de passe incorrect" });
+    if (!passwordMatch) {
+      return res.status(401).json({ error: "Invalid username or password" });
     }
 
-    res.json({ message: "Connexion réussie" });
-  } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ error: "Erreur serveur" });
-  } finally {
-    if (req.dbConnection) req.dbConnection.end();
+    res.status(200).json({ message: "Authentication successful" });
+  } catch (error) {
+    console.error("Error authenticating user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 export default router;
