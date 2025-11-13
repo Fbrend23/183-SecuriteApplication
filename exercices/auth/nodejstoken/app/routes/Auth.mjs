@@ -34,7 +34,7 @@ router.post("/register", connectToDatabaseMiddleware, async (req, res) => {
 });
 
 router.post("/", connectToDatabaseMiddleware, async (req, res) => {
-  const pepper = process.env.PEPPER_SECRET;
+  const pepper = process.env.POIVRE;
   const { username, password } = req.body;
 
   const queryString = "SELECT * FROM t_users WHERE useName = ?";
