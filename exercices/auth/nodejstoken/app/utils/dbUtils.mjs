@@ -1,0 +1,20 @@
+import mysql from "mysql2/promise";
+
+const dbConfig = {
+  host: "db",
+  user: "db_user",
+  password: "db_user_pass",
+  database: "db_authentication",
+  multipleStatements: true,
+};
+
+export const connectToDatabase = async () => {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    console.log("Connected to the database");
+    return connection;
+  } catch (error) {
+    console.error("Error connecting to the database:", error);
+    throw error;
+  }
+};
